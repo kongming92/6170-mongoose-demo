@@ -22,7 +22,7 @@ db.once('open', function callback () {
   );
 });
 
-// When insertMovies is done, we set up routes.
+// When insertMovies is done, we insert theaters and then set up routes.
 var insertMovies = function (db) {
   var inserted = 0;
   data.movieArray.forEach(function (movie) {
@@ -31,8 +31,23 @@ var insertMovies = function (db) {
       // assume no errors
       inserted++;
       if (inserted == data.movieArray.length) {
+        insertTheaters(db);
+      }
+    });
+  });
+};
+
+var insertTheaters = function (db) {
+  var inserted = 0;
+  data.theaterArray.forEach(function (theater) {
+    var t = new data.Theater(theater);
+    t.save(function (err) {
+      // assume no errors
+      inserted++;
+      if (inserted == data.theaterArray.length) {
         setupRoutes(db);
       }
+
     });
   });
 };
@@ -43,8 +58,30 @@ var setupRoutes = function (db) {
     // Get the list of Movies, sorted by ascending order of time
     // Remember, the Mongoose object is data.Movie
     // Look at views/movies/index.ejs to see what the view expects.
-    // YOUR CODE HERE
+
+    // Exercise 5:
+    // Extend the query below to populate each Movie with its Theater information
+    // For more information, check out the Populate section here:
+    // http://mongoosejs.com/docs/populate.html
+
+    // ----- EXERCISE 2 SOLUTION -----
+    data.Movie.find({}).sort({time: 'asc'}).exec(function (error, movies) {
+      res.render('movies/index', {movies: movies.map(formatMovie)});
+    });
+    // ----- EXERCISE 2 SOLUTION -----
   });
+};
+
+// Exercise 6:
+// Extend the object returned by the formatMovie function to include the Theater's name
+// Remember that you've already replaced the reference to the Theater object with
+// the actual object
+var formatMovie = function(movie) {
+  return {
+    title: movie.title,
+    time: Time.unparse(movie.time),
+    theater: 'YOUR CODE HERE' // YOUR CODE HERE
+  };
 };
 
 module.exports = router;

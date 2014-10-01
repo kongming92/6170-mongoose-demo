@@ -83,7 +83,7 @@ var formatMovie = function(movie) {
   return {
     title: movie.title,
     time: Time.unparse(movie.time),
-    theater: movie.theater.name // EXERCISE 6 SOLUTION
+    theater: movie.theater.getDescription() // EXERCISE 8 SOLUTION
   };
 };
 

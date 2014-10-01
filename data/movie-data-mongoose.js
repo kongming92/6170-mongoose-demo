@@ -1,6 +1,13 @@
 var Time = require('../util/time');
 var mongoose = require('mongoose');
 
+// Exercise 8:
+// Write validators for movieSchema and theaterSchema:
+// For movieSchema, ensure that the length of title is greater than zero, and that the id of theater
+// is greater than 0.
+// For theaterSchema, ensure that the id is greater than 0, the name and location have
+// lengths greater than 0
+// For more information: http://mongoosejs.com/docs/validation.html
 
 // Exercise 1:
 // Declare a schema and make a model for a Movie
@@ -40,7 +47,10 @@ var theaterSchema = mongoose.Schema({
 // For more information, see the Instance Methods section here:
 // http://mongoosejs.com/docs/guide.html
 
-// YOUR CODE HERE
+// EXERCISE 7 SOLUTION
+theaterSchema.methods.getDescription = function() {
+	return this.name + " - " + this.location;
+};
 
 exports.Theater = mongoose.model('Theater', theaterSchema);
 // ----- EXERCISE 3 SOLUTION -----

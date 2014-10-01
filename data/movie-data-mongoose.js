@@ -13,7 +13,8 @@ var mongoose = require('mongoose');
 // ----- EXERCISE 1 SOLUTION -----
 var movieSchema = mongoose.Schema({
 	title: String,
-	time: Number
+	time: Number,
+	theater: {type: Number, ref: 'Theater'}	// EXERCISE 4 SOLUTION
 });
 
 exports.Movie = mongoose.model('Movie', movieSchema);
@@ -26,7 +27,23 @@ exports.Movie = mongoose.model('Movie', movieSchema);
 //	- a name, which is a String
 //	- a location, which is a String
 
+// ----- EXERCISE 3 SOLUTION -----
+var theaterSchema = mongoose.Schema({
+	_id: Number,
+	name: String,
+	location: String,
+});
+
+// Exercise 7:
+// Define an instance method on theaterSchema called getDescription
+// which should return the concatenation of the name and location, separated by a dash
+// For more information, see the Instance Methods section here:
+// http://mongoosejs.com/docs/guide.html
+
 // YOUR CODE HERE
+
+exports.Theater = mongoose.model('Theater', theaterSchema);
+// ----- EXERCISE 3 SOLUTION -----
 
 // Exercise 4:
 // Extend the Movie schema above to include a reference to a Theater

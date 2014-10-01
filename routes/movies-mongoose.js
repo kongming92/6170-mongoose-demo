@@ -64,11 +64,11 @@ var setupRoutes = function (db) {
     // For more information, check out the Populate section here:
     // http://mongoosejs.com/docs/populate.html
 
-    // ----- EXERCISE 2 SOLUTION -----
-    data.Movie.find({}).sort({time: 'asc'}).exec(function (error, movies) {
+    // ----- EXERCISE 2, 5 SOLUTION -----
+    data.Movie.find({}).sort({time: 'asc'}).populate('theater').exec(function (error, movies) {
       res.render('movies/index', {movies: movies.map(formatMovie)});
     });
-    // ----- EXERCISE 2 SOLUTION -----
+    // ----- EXERCISE 2, 5 SOLUTION -----
   });
 };
 
@@ -76,11 +76,14 @@ var setupRoutes = function (db) {
 // Extend the object returned by the formatMovie function to include the Theater's name
 // Remember that you've already replaced the reference to the Theater object with
 // the actual object
+
+// Exercise 8:
+// Use the getDescription method created in Exercise 7 in place of movie.theater.name
 var formatMovie = function(movie) {
   return {
     title: movie.title,
     time: Time.unparse(movie.time),
-    theater: 'YOUR CODE HERE' // YOUR CODE HERE
+    theater: movie.theater.name // EXERCISE 6 SOLUTION
   };
 };
 

@@ -9,12 +9,20 @@ mongoose.connect('mongodb://localhost/mongoose-movie-db');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Mongoose connection error:'));
+
+// Here we "open" the database. Remember, Node is single threaded
+// Thus we must attach callbacks to every non-instantaneous operation
+// The series of callbacks gives the sequence of execution:
+// First, we open the database, then call insertMovies.
 db.once('open', function callback () {
   mongoose.connection.db.dropDatabase(
-    function (err, result) {insertMovies(db)}
+    function (err, result) {
+      insertMovies(db);
+    }
   );
 });
 
+// When insertMovies is done, we set up routes.
 var insertMovies = function (db) {
   var inserted = 0;
   data.movieArray.forEach(function (movie) {
@@ -22,75 +30,21 @@ var insertMovies = function (db) {
     m.save(function (err) {
       // assume no errors
       inserted++;
-      if (inserted == data.movieArray.length)
-        insertTheaters(db);      
+      if (inserted == data.movieArray.length) {
+        setupRoutes(db);
+      }
     });
   });
-}
-
-var insertTheaters = function (db) {
-  var inserted = 0;
-  data.theaterArray.forEach(function (theater) {
-    var t = new data.Theater(theater);
-    t.save(function (err) {
-      // assume no errors
-      inserted++;
-      if (inserted == data.theaterArray.length)
-        setupRoutes(db);      
-    });
-  });
-}
+};
 
 var setupRoutes = function (db) {
-	// render using response res the results of querying the database with a conjunction
-	// of the queries in the array query
-	// note use of Mongoose populate here: critical to making the join easy
-	// also illustrates use of sort
-  var renderQuery = function (query, res) {
-    data.Movie.find({$and: query}).sort({time: 'asc'}).exec(function (err, movies) {
-      data.Movie.populate(movies, {path: "theater"}, function (err, result) {
-        res.render('movies/index', {movies: movies.map(formatMovie)})
-      })
-    });
-  }
-  
-	// home page: render list of all movies
   router.get('/', function(req, res) {
-    renderQuery([{}], res);
-  })
-
-	// search form submission: render list of matching movies
-  router.post('/search', function(req, res) {
-    var theaters = db.collection('theaters');
-    var query = [];
-    if (req.body.title.length > 0)
-      query.push({title: req.body.title});
-    if (req.body.time.length > 0)
-      // note: no error handling here; will throw exception if time field misformed
-      query.push({time: Time.parse(req.body.time)});
-    if (req.body.theater.length > 0)	
-      theaters.findOne({name: req.body.theater}, function (err, theater) {
-        query.push({theater: theater.id});
-        renderQuery(query, res);
-      });
-    else if (query.length === 0)
-      res.redirect('/movies/find');
-    else
-      renderQuery(query, res);
+    // Exercise 2:
+    // Get the list of Movies, sorted by ascending order of time
+    // Remember, the Mongoose object is data.Movie
+    // Look at views/movies/index.ejs to see what the view expects.
+    // YOUR CODE HERE
   });
-
-	// search page: render form
-  router.get('/find', function(req, res) {
-  	res.render('movies/find');
-  });
-}
-
-var formatMovie = function (m) {
-  return {
-    title: m.title,
-    theater: m.theater.name + ", " + m.theater.location,
-    time: Time.unparse(m.time)
-    };
-}
+};
 
 module.exports = router;

@@ -15,3 +15,8 @@ a {
 	padding: 3px;
   border-bottom: 1px solid #CCC;
 }
+
+.error {
+  color: red;
+  font-size: 1.2em;
+}

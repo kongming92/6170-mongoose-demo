@@ -54,10 +54,58 @@ var insertTheaters = function (db) {
 
 var setupRoutes = function (db) {
   router.get('/', function(req, res) {
+    var errorstr = '';
+    if (req.query.error) {
+      errorstr = req.query.error;
+    }
     data.Movie.find({}).sort({time: 'asc'}).populate('theater').exec(function (error, movies) {
-      res.render('movies/index', {movies: movies.map(formatMovie)});
+      res.render('movies/index', {movies: movies.map(formatMovie), error: errorstr});
     });
   });
+
+  router.get('/new', function(req, res) {
+    data.Theater.find({}).sort({name: 'asc'}).exec(function(error, theaters) {
+      res.render('movies/new', {
+        theaters: theaters.map(function(theater) {
+          return {
+            _id: theater._id,
+            name: theater.name,
+            location: theater.location
+          };
+        })
+      });
+    });
+  });
+
+  router.post('/', function(req, res) {
+    var time = req.body.time;
+    if (Time.canParse(time)) {
+      time = Time.parse(time);
+      var newMovie = new data.Movie({
+        title: req.body.title,
+        time: time,
+        theater: req.body.theaterId
+      });
+      newMovie.save(function(error) {
+        if (error) {
+          handleValidateError(res, error.errors, '/movies');
+        } else {
+          res.redirect('/movies');
+        }
+      });
+    } else {
+      res.redirect('/movies?error=Invalid+time');
+    }
+  });
+};
+
+var handleValidateError = function(res, errors, redirURL) {
+  for (var key in errors) {
+    if (errors.hasOwnProperty(key)) {
+      var redir = redirURL + "?error=" + errors[key].message;
+      res.redirect(redir);
+    }
+  }
 };
 
 var formatMovie = function(movie) {

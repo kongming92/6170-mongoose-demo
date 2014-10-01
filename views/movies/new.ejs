@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <%- include ../head.ejs %>
+  <body id="movies">
+    <%- include ../links.ejs %>
+    <h2>Add a movie</h2>
+    <form action="/movies" method="POST">
+      Title: <input type="text" name="title" /><br />
+      Time: <input type="text" name="time" /><br />
+      Theater:
+      <select name="theaterId">
+        <% theaters.forEach(function(theater) { %>
+          <option value="<%= theater._id %>"><%= theater.name %></option>
+        <% }) %>
+      </select><br />
+      <input type="submit">
+  </body>
+</html>
